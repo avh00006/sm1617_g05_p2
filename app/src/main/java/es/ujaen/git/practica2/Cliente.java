@@ -1,6 +1,7 @@
 package es.ujaen.git.practica2;
 
 /**
+<<<<<<< HEAD
  * Created by ANGEL on 18/11/2016.
  */
 /** Clase para la interfaz del usuario
@@ -66,8 +67,4 @@ public interface Cliente {
      *
      */
     void grafevoluc();
-
-
-
-}
 
