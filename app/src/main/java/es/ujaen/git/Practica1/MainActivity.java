@@ -89,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    /**Método que cambia a la actividad de autenticación
+     *
+     * @param view es el objeto de la vista
+     */
     public void  Plogeo(View view){
         Intent pl = new Intent(this,Logeo.class);
 
