@@ -7,10 +7,27 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="es.ujaen.git.practica2.MainActivity">
+    android:background="@drawable/fondo2"
+    tools:context="es.ujaen.git.Practica1.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/main_title"
+        android:id="@+id/main_text_title"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="#44345454"
+        android:padding="6dp"
+        android:textColor="@color/abc_primary_text_material_dark" />
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/main_frame"
+        android:layout_below="@+id/main_text_title">
+    </FrameLayout>
 </RelativeLayout>
