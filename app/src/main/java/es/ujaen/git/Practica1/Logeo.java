@@ -24,6 +24,9 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.cert.CRL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 ;
 
@@ -53,8 +56,71 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
         super.onCreate(savedInstanceState);
         String cadena = getSharedPreferences(PREFERENCE,MODE_PRIVATE).getString("PREFERENCE", sesion);
-        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(cadena==null){
+        boolean expira = false;
+        if(cadena!=null){
+            Date fecha = new Date(System.currentTimeMillis()+3600000);
+
+
+            String expiracion = sesion.substring(34);
+
+            String an = expiracion.substring(0,4);
+            String mes = expiracion.substring(5,7);
+            String dia = expiracion.substring(8,10);
+            String hora = expiracion.substring(11,13);
+            String min = expiracion.substring(14,16);
+            String seg = expiracion.substring(17,19);
+            int año = Integer.parseInt(an);
+            int me = Integer.parseInt(mes);
+            int giorno = Integer.parseInt(dia);
+            int h = Integer.parseInt(hora);
+            int m = Integer.parseInt(min);
+            int s = Integer.parseInt(seg);
+
+
+
+
+            SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd-H-m-s");
+            String expires = dt1.format(fecha);
+            try {
+                Date expiraSesion= dt1.parse(expiracion);
+                Date fecha2=new Date(System.currentTimeMillis()+3600000);
+                System.out.println(expiraSesion.toString());
+                if(expiraSesion.before(fecha2)){
+                    expira=true;
+
+                }else
+                    expira=false;
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+                expira=true;
+            }
+
+            //SimpleDateFormat dt2 = new SimpleDateFormat(expires);
+            //Date fecha3 = new Date(año,me,giorno,h,m,s);
+
+//            try{
+//                fecha2=dt1.parse(expires);
+//
+//            }catch(ParseException e){
+//                e.printStackTrace();
+//
+//            }
+//
+//            System.out.println(fecha2.getTime());
+//            //System.out.println(fecha2.getTime()+360000);
+//            fecha2.setTime(fecha.getTime()+30000);
+
+
+
+
+
+
+        }
+
+
+
+        if((cadena==null)|| expira){
             setContentView(R.layout.login);
             usuario = (EditText) findViewById(R.id.txtNick);
             contraseña = (EditText)findViewById(R.id.txtPass);
@@ -63,7 +129,7 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
             btn.setOnClickListener(this);
 
 
-        }else{
+        }else if(!expira){
 
             //System.currentTimeMillis();
             Intent i = new Intent(this, SharedPrefsActivity.class);
