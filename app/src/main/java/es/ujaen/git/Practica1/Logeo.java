@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,7 +40,7 @@ import java.util.Date;
 public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
 
-    static String sesion;
+    static String sesion=null;
     private Button btn;
     public String user;
     public String pass;
@@ -225,7 +225,7 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
             flujo.write(pass.getBytes());
             entrada=is.readLine();
 
-            if(entrada.equals("ERROR Usuario o clave incorrectos")){
+            if(entrada.equals("ERROR Usuario o clave incorrectos")||entrada.equals("ERROR")){
                 Logeo.sesion=null;
 
 
