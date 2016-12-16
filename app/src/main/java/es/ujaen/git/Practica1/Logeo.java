@@ -28,7 +28,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-;
+;import static es.ujaen.git.Practica1.Logeo.expiracion;
+import static es.ujaen.git.Practica1.Logeo.expire;
+import static es.ujaen.git.Practica1.Logeo.sesion;
 
 /**
  * Created by Francisco on 29/11/2016.
@@ -41,6 +43,9 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
 
     static String sesion=null;
+    static String id = null;
+    static String expiracion = null;
+    static String expire = null;
     private Button btn;
     public String user;
     public String pass;
@@ -57,43 +62,30 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
         super.onCreate(savedInstanceState);
         String cadena = getSharedPreferences(PREFERENCE,MODE_PRIVATE).getString("PREFERENCE", sesion);
         boolean expira = false;
+
         if(cadena!=null){
-            Date fecha = new Date(System.currentTimeMillis()+3600000);
-
-
-            String expiracion = sesion.substring(34);
-
-            String an = expiracion.substring(0,4);
-            String mes = expiracion.substring(5,7);
-            String dia = expiracion.substring(8,10);
-            String hora = expiracion.substring(11,13);
-            String min = expiracion.substring(14,16);
-            String seg = expiracion.substring(17,19);
-            int año = Integer.parseInt(an);
-            int me = Integer.parseInt(mes);
-            int giorno = Integer.parseInt(dia);
-            int h = Integer.parseInt(hora);
-            int m = Integer.parseInt(min);
-            int s = Integer.parseInt(seg);
-
-
-
 
             SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd-H-m-s");
-            String expires = dt1.format(fecha);
+
             try {
-                Date expiraSesion= dt1.parse(expiracion);
+
+                Date expiraSesion= dt1.parse(expire);
                 Date fecha2=new Date(System.currentTimeMillis()+3600000);
                 System.out.println(expiraSesion.toString());
+
                 if(expiraSesion.before(fecha2)){
+
                     expira=true;
 
                 }else
+
                     expira=false;
 
             } catch (ParseException e) {
+
                 e.printStackTrace();
                 expira=true;
+
             }
 
             //SimpleDateFormat dt2 = new SimpleDateFormat(expires);
@@ -112,22 +104,16 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 //            fecha2.setTime(fecha.getTime()+30000);
 
 
-
-
-
-
         }
 
 
-
         if((cadena==null)|| expira){
+
             setContentView(R.layout.login);
             usuario = (EditText) findViewById(R.id.txtNick);
             contraseña = (EditText)findViewById(R.id.txtPass);
-
             btn=(Button)findViewById(R.id.btnLogin);
             btn.setOnClickListener(this);
-
 
         }else if(!expira){
 
@@ -140,6 +126,7 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
         }
 
     }
+
 
     /**Método que se utiliza para conectarse al servidor
      * @param v es el objeto de la vista
@@ -158,6 +145,7 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
             conectar.execute(direccion);
 
         }catch(Exception ex){
+
             System.out.println("Error en el cliente"+ex.getMessage());
             String error = "IOException: " + ex.toString();
 
@@ -200,6 +188,7 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
      */
     @Override
     protected String doInBackground(InetSocketAddress... arg0) {
+
         Socket cli = null;
         String entrada=null;
 
@@ -212,41 +201,44 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
             BufferedReader is = new BufferedReader(new InputStreamReader(cli.getInputStream()));
             DataOutputStream flujo = new DataOutputStream(cli.getOutputStream());
             entrada=is.readLine();
-
-
             String user = USER +SP+usuario+CRLF;
-
-
             flujo.write(user.getBytes());
             entrada=is.readLine();
-
             String pass = PASS+SP+contraseña+CRLF;
-
             flujo.write(pass.getBytes());
             entrada=is.readLine();
 
             if(entrada.equals("ERROR Usuario o clave incorrectos")||entrada.equals("ERROR")){
-                Logeo.sesion=null;
+
+                sesion=null;
 
 
             }else{
 
-                Logeo.sesion=entrada;
+                sesion=entrada;
+                String[] arraySesion = sesion.split("&");
+                Logeo.id =  arraySesion[0];
+                Logeo.expiracion =  arraySesion[1];
+                expire = expiracion.substring(8);
+                System.out.println(expire);
+
+//                for(int i=0;i<arraySesion.length;i++){
+//
+//                }
+
             }
-
-
-
 
             //String salir = QUIT + CRLF;
             //flujo.write(salir.getBytes());
             //entrada=is.readLine();
             flujo.flush();
         }catch(IOException ex){
+
             System.out.println("Error en el cliente"+ex.getMessage());
             entrada = "IOException: " + ex.toString();
         }
 
-        return Logeo.sesion;
+        return sesion;
 
     }
 
@@ -269,12 +261,13 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
 
         super.onPostExecute(result);
         SharedPreferences.Editor edit = context.getSharedPreferences(Logeo.PREFERENCE,context.MODE_PRIVATE).edit();
-        edit.putString("Sesion",Logeo.sesion);
+        edit.putString("Sesion", sesion);
         edit.commit();
-        if(Logeo.sesion!=null){
+
+        if(sesion!=null){
 
             Intent i = new Intent(context, SharedPrefsActivity.class);
-            i.putExtra("sesion", Logeo.sesion.toString());
+            i.putExtra("sesion", sesion.toString());
             i.setClass(context,SharedPrefsActivity.class);
             context.startActivity(i);
 
@@ -284,14 +277,9 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
             Toast toast1 =
                     Toast.makeText(context.getApplicationContext(),
                             "Usuario y/o contraseña incorrecta", Toast.LENGTH_SHORT);
-
-
-
             toast1.show();
 
         }
-
-
 
     }
 
