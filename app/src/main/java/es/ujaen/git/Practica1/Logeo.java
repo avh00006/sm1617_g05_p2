@@ -6,11 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-//import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,8 +23,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-;import static es.ujaen.git.Practica1.Logeo.expiracion;
+import static es.ujaen.git.Practica1.Logeo.PREFERENCE1;
+import static es.ujaen.git.Practica1.Logeo.PREFERENCE2;
+import static es.ujaen.git.Practica1.Logeo.expiracion;
 import static es.ujaen.git.Practica1.Logeo.expire;
+import static es.ujaen.git.Practica1.Logeo.id;
 import static es.ujaen.git.Practica1.Logeo.sesion;
 
 /**
@@ -52,6 +50,9 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
     EditText usuario;
     EditText contraseña;
     public static final String PREFERENCE = "Sesion";
+    public static final String PREFERENCE1 = "Identificacion de sesion";
+    public static final String PREFERENCE2 = "Expiracion";
+
 
     /**Método que crea el layout de autenticación
      * @param savedInstanceState recibe los datos almacenados
@@ -60,8 +61,9 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        String cadena = getSharedPreferences(PREFERENCE,MODE_PRIVATE).getString("PREFERENCE", sesion);
+        String cadena = getSharedPreferences(PREFERENCE2,MODE_PRIVATE).getString(PREFERENCE2, expire);
         boolean expira = false;
+
 
         if(cadena!=null){
 
@@ -71,7 +73,6 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
                 Date expiraSesion= dt1.parse(expire);
                 Date fecha2=new Date(System.currentTimeMillis()+3600000);
-                System.out.println(expiraSesion.toString());
 
                 if(expiraSesion.before(fecha2)){
 
@@ -119,7 +120,9 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
             //System.currentTimeMillis();
             Intent i = new Intent(this, SharedPrefsActivity.class);
-            i.putExtra("sesion", Logeo.sesion.toString());
+            //i.putExtra("sesion", Logeo.sesion.toString());
+            i.putExtra(PREFERENCE1, id.toString());
+            i.putExtra(PREFERENCE2, expire.toString());
             i.setClass(this,SharedPrefsActivity.class);
             startActivity(i);
 
@@ -216,15 +219,9 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
             }else{
 
                 sesion=entrada;
-                String[] arraySesion = sesion.split("&");
-                Logeo.id =  arraySesion[0];
-                Logeo.expiracion =  arraySesion[1];
-                expire = expiracion.substring(8);
-                System.out.println(expire);
 
-//                for(int i=0;i<arraySesion.length;i++){
-//
-//                }
+
+
 
             }
 
@@ -261,13 +258,22 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
 
         super.onPostExecute(result);
         SharedPreferences.Editor edit = context.getSharedPreferences(Logeo.PREFERENCE,context.MODE_PRIVATE).edit();
-        edit.putString("Sesion", sesion);
-        edit.commit();
+
 
         if(sesion!=null){
 
+
+            String[] arraySesion = sesion.split("&");
+            id =  arraySesion[0];
+            Logeo.expiracion =  arraySesion[1];
+            expire = expiracion.substring(8);
+            edit.putString(PREFERENCE1, id);
+            edit.putString(PREFERENCE2, expire );
+            edit.commit();
+
             Intent i = new Intent(context, SharedPrefsActivity.class);
-            i.putExtra("sesion", sesion.toString());
+            i.putExtra(PREFERENCE1, id.toString());
+            i.putExtra(PREFERENCE2, expire.toString());
             i.setClass(context,SharedPrefsActivity.class);
             context.startActivity(i);
 
