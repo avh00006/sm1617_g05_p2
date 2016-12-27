@@ -61,6 +61,15 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        //TODO Tenéis un error, habéis leído el fichero de preferencias PREFERENCE2 cuando no exite
+        //Habéis confundido el nombre con la clave. El código deberíais haberlo dividido para evitar errores
+        //Logeo.PREFERENCE
+        //SharedPreferences pref = getSharedPreferences(PREFERENCE,MODE_PRIVATE);
+        //if(pref!=null)
+        // {
+        //  String cadena = pref.getString(PREFERENCE2, expire);
+        //  ...
+        //TODO con este código nunca os podrá funcionar porque ese fichero de preferencias no existe
         String cadena = getSharedPreferences(PREFERENCE2,MODE_PRIVATE).getString(PREFERENCE2, expire);
         boolean expira = false;
 
@@ -71,7 +80,8 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
             try {
 
-                Date expiraSesion= dt1.parse(expire);
+                //TODO no puede ser que la variable 'cadena' no la uséis cuando es la que leéis de las preferencias
+                Date expiraSesion= dt1.parse(expire);//TODO debéis usar 'cadena' no 'expire'
                 Date fecha2=new Date(System.currentTimeMillis()+3600000);
 
                 if(expiraSesion.before(fecha2)){
@@ -141,7 +151,8 @@ public class Logeo extends Activity implements View.OnClickListener,Protocolo{
 
         try{
 
-            InetSocketAddress direccion = new InetSocketAddress("169.254.83.12",6000);
+            //TODO La IP por lo menos que esté en una constante al igual que el puerto
+            InetSocketAddress direccion = new InetSocketAddress("192.168.1.156",6000);
             user = usuario.getText().toString();
             pass = contraseña.getText().toString();
             MiTareaAsincrona conectar = new MiTareaAsincrona(this,user,pass);
@@ -211,6 +222,7 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
             flujo.write(pass.getBytes());
             entrada=is.readLine();
 
+            //TODO no debéis comparar con todo el texto, solo con ERROR
             if(entrada.equals("ERROR Usuario o clave incorrectos")||entrada.equals("ERROR")){
 
                 sesion=null;
@@ -225,6 +237,7 @@ class MiTareaAsincrona extends AsyncTask<InetSocketAddress, Void, String> implem
 
             }
 
+            //TODO Debéis cerrar la conexión con el servidor (descomentar el código que tenéis aquí
             //String salir = QUIT + CRLF;
             //flujo.write(salir.getBytes());
             //entrada=is.readLine();
